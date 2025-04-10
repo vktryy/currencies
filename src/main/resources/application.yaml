@@ -5,9 +5,9 @@ spring:
   application:
     name: tbankApp
   datasource:
-#    url: jdbc:postgresql://db:5432/currency_tracker
-#    username: postgres
-#    password: postgres
+    url: jdbc:postgresql://db:5432/currency_tracker
+    username: postgres
+    password: postgres
     driver-class-name: org.postgresql.Driver
     hikari:
       connection-timeout: 30000

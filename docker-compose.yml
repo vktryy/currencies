@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.2'
 
 services:
   app:
@@ -9,8 +9,7 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/currency_tracker
       SPRING_DATASOURCE_USERNAME: postgres
