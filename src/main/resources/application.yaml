@@ -5,10 +5,13 @@ spring:
   application:
     name: tbankApp
   datasource:
-    url: jdbc:postgresql://db:5432/currency_tracker
-    username: postgres
-    password: postgres
+#    url: jdbc:postgresql://db:5432/currency_tracker
+#    username: postgres
+#    password: postgres
     driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 30000
+      initialization-fail-timeout: 0
   jpa:
     hibernate:
       ddl-auto: none
@@ -20,3 +23,6 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
     enabled: true
     default-schema: public
+    user: postgres
+    password: postgres
+    url: jdbc:postgresql://db:5432/currency_tracker

@@ -7,7 +7,7 @@ services:
     networks:
       - app_network
     ports:
-      - "8069:8069"
+      - "8080:8080"
     depends_on:
       db:
         condition: service_healthy
@@ -32,10 +32,10 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d currency_tracker" ]  # Проверка конкретной БД
+      interval: 2s
+      timeout: 2s
+      retries: 30
 
 volumes:
   pg_data:
