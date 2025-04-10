@@ -31,7 +31,7 @@ public class Service {
     public Currency updateCurrency(String id, Currency currency) {
         Currency existing = getCurrencyById(id);
         existing.setName(currency.getName());
-        existing.setDefaultCurrency(currency.getDefaultCurrency());
+        existing.setBaseCurrency(currency.getBaseCurrency());
         existing.setPriceChangeRange(currency.getPriceChangeRange());
         existing.setDescription(currency.getDescription());
         return currencyRepository.save(existing);

@@ -16,7 +16,7 @@ public class Currency {
     @Id
     private String id;
     private String name;
-    private String defaultCurrency;
+    private String baseCurrency;
     private String priceChangeRange;
     private String description;
 }

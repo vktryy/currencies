@@ -1,20 +1,6 @@
 version: '3.2'
 
 services:
-  app:
-    build: .
-    container_name: currency-app
-    networks:
-      - app_network
-    ports:
-      - "8080:8080"
-    depends_on:
-      - db
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/currency_tracker
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
-      SPRING_LIQUIBASE_ENABLED: "true"
 
   db:
     image: postgres:15
@@ -35,6 +21,21 @@ services:
       interval: 2s
       timeout: 2s
       retries: 30
+
+  app:
+    build: .
+    container_name: currency-app
+    networks:
+      - app_network
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/currency_tracker
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_LIQUIBASE_ENABLED: "true"
 
 volumes:
   pg_data:

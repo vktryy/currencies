@@ -32,7 +32,7 @@ tasks.jar {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.liquibase:liquibase-core:4.25.1")  // Явное указание версии
+    implementation("org.liquibase:liquibase-core:4.25.1")
     implementation("org.postgresql:postgresql:42.6.0")
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
