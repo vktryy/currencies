@@ -1,7 +1,7 @@
 package ru.vktry.service;
 
 
-import jakarta.annotation.PostConstruct;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.client.RestTemplate;
 import ru.vktry.model.Currency;
 import ru.vktry.repository.Repository;
@@ -15,6 +15,7 @@ public class Service {
 
     private final Repository currencyRepository;
     private final RestTemplate restTemplate;
+    private final int SCHEDULED_RATE = 3600000;
 
     private static final String API_URL = "https://www.cbr-xml-daily.ru/daily_json.js";
 
@@ -50,7 +51,7 @@ public class Service {
         currencyRepository.deleteById(id);
     }
 
-    @PostConstruct
+    @Scheduled(fixedRate = SCHEDULED_RATE)
     public void checkCurrencyChanges() {
         Map<String, Object> currencies = getCurrenciesFromApi();
 

@@ -18,7 +18,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: default_currency
+                  name: base_currency
                   type: VARCHAR(3)
                   constraints:
                     nullable: false
