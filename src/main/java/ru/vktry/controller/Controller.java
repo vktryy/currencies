@@ -15,19 +15,19 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.vktry.model.Currency;
 import ru.vktry.service.Service;
 
-@RequestMapping({"/api"})
+@RequestMapping("/api")
 @RestController
 public class Controller {
     private final Service service;
 
-    @GetMapping({"/currencies"})
+    @GetMapping("/currencies")
     public ResponseEntity<List<Currency>> getCurrencies() {
         return ResponseEntity.ok(this.service.getCurrencies());
     }
 
-    @PostMapping({"/currencies"})
+    @PostMapping("/currencies")
     public ResponseEntity<Currency> addCurrency(@RequestBody Currency currency) {
-        if (currency.getName() != null && currency.getDefaultCurrency() != null && currency.getPriceChangeRange() != null) {
+        if (currency.getName() != null && currency.getBaseCurrency() != null && currency.getPriceChangeRange() != null) {
             this.service.addCurrency(currency);
             return ResponseEntity.status(HttpStatus.CREATED).body(currency);
         } else {
@@ -35,17 +35,17 @@ public class Controller {
         }
     }
 
-    @GetMapping({"/currencies/{id}"})
+    @GetMapping("/currencies/{id}")
     public ResponseEntity<Currency> getCurrency(@PathVariable String id) {
         return ResponseEntity.ok(this.service.getCurrencyById(id));
     }
 
-    @PutMapping({"/currencies/{id}"})
+    @PutMapping("/currencies/{id}")
     public ResponseEntity<Currency> updateCurrency(@PathVariable String id, @RequestBody Currency currency) {
         return ResponseEntity.ok(this.service.updateCurrency(id, currency));
     }
 
-    @DeleteMapping({"/currencies/{id}"})
+    @DeleteMapping("/currencies/{id}")
     public ResponseEntity<Currency> deleteCurrency(@PathVariable String id) {
         this.service.deleteCurrencyById(id);
         return ResponseEntity.noContent().build();

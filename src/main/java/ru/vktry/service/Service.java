@@ -1,45 +1,81 @@
 package ru.vktry.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.web.client.RestTemplate;
 import ru.vktry.model.Currency;
+import ru.vktry.repository.Repository;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @org.springframework.stereotype.Service
 public class Service {
-    private final List<Currency> currencies = new ArrayList();
+
+    private final Repository currencyRepository;
+    private final RestTemplate restTemplate;
+    private final int SCHEDULED_RATE = 3600000;
+
+    private static final String API_URL = "https://www.cbr-xml-daily.ru/daily_json.js";
+
+    public Service(Repository currencyRepository, RestTemplate restTemplate) {
+        this.currencyRepository = currencyRepository;
+        this.restTemplate = restTemplate;
+    }
 
     public List<Currency> getCurrencies() {
-        return currencies;
+        return currencyRepository.findAll();
     }
 
     public Currency addCurrency(Currency currency) {
-        String id = UUID.randomUUID().toString();
-        currency.setId(id);
-        this.currencies.add(currency);
-        return currency;
+        currency.setId(UUID.randomUUID().toString());
+        return currencyRepository.save(currency);
     }
 
     public Currency getCurrencyById(String id) {
-        return (Currency)this.currencies.stream().filter((currency) -> {
-            return currency.getId().equals(id);
-        }).findFirst().orElseThrow(() -> {
-            return new RuntimeException("Не найдена валюта с ID:" + id);
-        });
+        return currencyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Не найдена валюта с ID:" + id));
     }
 
     public Currency updateCurrency(String id, Currency currency) {
-        Currency updatedCurrency = this.getCurrencyById(id);
-        updatedCurrency.setName(currency.getName());
-        updatedCurrency.setDefaultCurrency(currency.getDefaultCurrency());
-        updatedCurrency.setPriceChangeRange(currency.getPriceChangeRange());
-        updatedCurrency.setDescription(currency.getDescription());
-        return updatedCurrency;
+        Currency existing = getCurrencyById(id);
+        existing.setName(currency.getName());
+        existing.setBaseCurrency(currency.getBaseCurrency());
+        existing.setPriceChangeRange(currency.getPriceChangeRange());
+        existing.setDescription(currency.getDescription());
+        return currencyRepository.save(existing);
     }
 
     public void deleteCurrencyById(String id) {
-        this.currencies.remove(this.getCurrencyById(id));
+        currencyRepository.deleteById(id);
     }
 
+    @Scheduled(fixedRate = SCHEDULED_RATE)
+    public void checkCurrencyChanges() {
+        Map<String, Object> currencies = getCurrenciesFromApi();
+
+        for (Currency currency : getCurrencies()) {
+            String charCode = currency.getBaseCurrency();
+
+            if (currencies.containsKey(charCode)) {
+                Map<String, Object> currencyData = (Map<String, Object>) currencies.get(charCode);
+
+                double value = Double.parseDouble(currencyData.get("Value").toString());
+                double previous = Double.parseDouble(currencyData.get("Previous").toString());
+                double priceChangeRange = Double.parseDouble(currency.getPriceChangeRange());
+
+                double changePercentage = (previous - value) / previous * 100;
+
+                if (Math.abs(changePercentage) >= priceChangeRange) {
+                    System.out.println(currency.getName() + " изменилась на " + changePercentage + "%");
+                }
+            }
+        }
+    }
+
+    private Map<String, Object> getCurrenciesFromApi() {
+        Map<String, Object> response = restTemplate.getForObject(API_URL, Map.class);
+        return (Map<String, Object>) response.get("Valute");
+    }
 }
